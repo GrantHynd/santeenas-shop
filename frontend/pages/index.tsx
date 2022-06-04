@@ -8,30 +8,20 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
+import { getProducts, Product } from "../lib/products";
 
-type Product = {
-  id: string;
-  name: string;
-  description: string;
-  imageUrl: string;
-  price: number;
-  stock: number;
+export async function getStaticProps() {
+  return {
+    props: { products: await getProducts() },
+    revalidate: 60,
+  };
+}
+
+type ProductProps = {
+  products: Product[];
 };
 
-export default function Home() {
-  const [products, setProducts] = useState<Product[]>([]);
-
-  const fetchProducts = useCallback(async () => {
-    const response = await fetch("http://localhost:8000/products/");
-    const data: Product[] = await response.json();
-    setProducts(data);
-  }, [setProducts]);
-
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
-
+export default function Home({ products }: ProductProps) {
   return (
     <div className="container">
       <Head>
