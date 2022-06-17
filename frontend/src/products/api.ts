@@ -12,3 +12,9 @@ export async function getProducts() {
   const data: Product[] = await response.json();
   return data;
 }
+
+export async function getProduct(id: string) {
+  const response = await fetch(`http://localhost:8000/products/${id}`);
+  const data: Product = await response.json();
+  return data;
+}
