@@ -20,6 +20,13 @@ app.get("/products", async (req, res) => {
   res.json(products);
 });
 
+app.get("/products/:id", async (req, res) => {
+  const product = await prisma.product.findUnique({
+    where: { id: req.params.id },
+  });
+  res.json(product);
+});
+
 app.listen(8000, () =>
   console.log(`🚀 Server ready at: http://localhost:8000`)
 );
