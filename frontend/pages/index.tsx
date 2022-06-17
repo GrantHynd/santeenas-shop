@@ -1,14 +1,18 @@
 import Head from "next/head";
 import Image from "next/image";
+import * as xLink from "next/link";
+
 import {
   Button,
   Card,
   CardActions,
   CardContent,
   Grid,
+  Link,
   Typography,
 } from "@mui/material";
 import { getProducts, Product } from "../lib/products";
+import { Header } from "../components/app/header";
 
 export async function getStaticProps() {
   return {
@@ -17,35 +21,19 @@ export async function getStaticProps() {
   };
 }
 
-type ProductProps = {
+type ProductsProps = {
   products: Product[];
 };
 
-export default function Home({ products }: ProductProps) {
+export default function Products({ products }: ProductsProps) {
   return (
     <div className="container">
       <Head>
-        <title>Nails by Santeena</title>
+        <title>Products | Styles by Santeena</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Grid
-          item
-          container
-          xs={12}
-          direction="column"
-          alignContent="center"
-          bgcolor="primary.main"
-          padding={10}
-          spacing={2}
-        >
-          <Typography variant="h3" color="#fff">
-            Santeena's Shop
-          </Typography>
-          <Typography variant="body1" color="#fff">
-            customise your look
-          </Typography>
-        </Grid>
+        <Header />
         <Grid
           item
           container
@@ -58,17 +46,28 @@ export default function Home({ products }: ProductProps) {
           {products.map((product) => {
             return (
               <Card key={product.id} sx={{ width: 320 }}>
-                <Image
-                  layout="responsive"
-                  width="320"
-                  height="400"
-                  src={product.imageUrl}
-                  alt={product.description}
-                />
+                <xLink.default href={`/products/${product.id}`} passHref={true}>
+                  <Link>
+                    <Image
+                      layout="responsive"
+                      width="320"
+                      height="400"
+                      src={product.imageUrl}
+                      alt={product.description}
+                    />
+                  </Link>
+                </xLink.default>
                 <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    {product.name}
-                  </Typography>
+                  <xLink.default
+                    href={`/products/${product.id}`}
+                    passHref={true}
+                  >
+                    <Link>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {product.name}
+                      </Typography>
+                    </Link>
+                  </xLink.default>
                   <Typography variant="body2" color="text.secondary">
                     {product.description}
                   </Typography>
