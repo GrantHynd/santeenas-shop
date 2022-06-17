@@ -2,8 +2,9 @@ import { Button, Container, Divider, Grid, Typography } from "@mui/material";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { Header } from "../../components/app/header";
-import { getProducts, getProduct, Product } from "../../lib/products";
+import { Header } from "../../src/app/components/Header";
+import { getProduct, getProducts, Product } from "../../src/products/api";
+import { convertToDisplayPrice } from "../../src/products/utils";
 
 export async function getStaticPaths() {
   const products = await getProducts();
@@ -34,7 +35,7 @@ type ProductProps = {
 
 export default function ProductDetail({ product }: ProductProps) {
   const router = useRouter();
-  const price = (Math.round(product.price * 100) / 100).toFixed(2);
+  const price = convertToDisplayPrice(product.price);
 
   if (router.isFallback) {
     return <div>Loading...</div>;

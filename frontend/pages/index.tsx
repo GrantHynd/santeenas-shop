@@ -11,8 +11,9 @@ import {
   Link,
   Typography,
 } from "@mui/material";
-import { getProducts, Product } from "../lib/products";
-import { Header } from "../components/app/header";
+import { getProducts, Product } from "../src/products/api";
+import { Header } from "../src/app/components/Header";
+import { convertToDisplayPrice } from "../src/products/utils";
 
 export async function getStaticProps() {
   return {
@@ -68,15 +69,18 @@ export default function Products({ products }: ProductsProps) {
                       </Typography>
                     </Link>
                   </xLink.default>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    height={25}
+                  >
                     {product.description}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    £{product.price}
-                  </Typography>
                 </CardContent>
-                <CardActions>
-                  <Button size="small">Add to cart</Button>
+                <CardActions style={{ justifyContent: "end" }}>
+                  <Button size="small" variant="text">
+                    Add to cart - £{convertToDisplayPrice(product.price)}
+                  </Button>
                 </CardActions>
               </Card>
             );
