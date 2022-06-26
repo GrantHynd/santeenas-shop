@@ -3,14 +3,9 @@ import { Button, Container, Divider, Grid, Typography } from "@mui/material";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+
 import { Header } from "../../src/app/components/Header";
-import {
-  CartResponse,
-  getCart,
-  patchCart,
-  postCart,
-} from "../../src/carts/api";
+import { patchCart, postCart } from "../../src/carts/api";
 import { getProduct, getProducts, Product } from "../../src/products/api";
 import { convertToDisplayPrice } from "../../src/products/utils";
 
@@ -44,27 +39,6 @@ type ProductProps = {
 export default function ProductDetail({ product }: ProductProps) {
   const router = useRouter();
   const price = convertToDisplayPrice(product.price);
-  const [cartIdCookie] = useState(Cookies.get("cart") || undefined);
-  const [cart, setCart] = useState<CartResponse | undefined>();
-
-  const getAndSetCart = useCallback(async () => {
-    if (cartIdCookie) {
-      const cartResponse = await getCart(cartIdCookie);
-      setCart(cartResponse);
-    }
-  }, [cartIdCookie, getCart]);
-
-  useEffect(() => {
-    getAndSetCart();
-  }, [getAndSetCart]);
-
-  useEffect(() => {
-    if (cartIdCookie === undefined) {
-      Cookies.remove("cart");
-    } else {
-      Cookies.set("cart", cartIdCookie);
-    }
-  }, [cartIdCookie]);
 
   if (router.isFallback) {
     return <div>Loading...</div>;
@@ -72,11 +46,11 @@ export default function ProductDetail({ product }: ProductProps) {
 
   async function addItemToCart(e: React.MouseEvent) {
     //TODO: When item is already in cart, and user clicks to add to cart again, the quantity is incremented.
-    if (cartIdCookie === undefined) {
+    if (Cookies.get("cart") === undefined) {
       const cart = await postCart({ products: [product], quantity: 1 });
       Cookies.set("cart", cart.sessionId);
     } else {
-      await patchCart(cartIdCookie, {
+      await patchCart(Cookies.get("cart") as string, {
         products: [product],
         quantity: 1,
       });
