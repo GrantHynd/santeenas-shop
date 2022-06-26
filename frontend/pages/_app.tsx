@@ -8,6 +8,7 @@ import { createTheme } from "@mui/material/styles";
 import Cookies from "js-cookie";
 
 import "./styles.css";
+import { Header } from "../src/app/components/Header";
 import { CartResponse, getCart } from "../src/carts/api";
 import { CartItemsContext } from "../src/carts/cartContext";
 
@@ -49,6 +50,7 @@ export default function MyApp({ Component = React.Component, pageProps = {} }) {
   return (
     <ThemeProvider theme={theme}>
       <CartItemsContext.Provider value={cart}>
+        <Header />
         <Component {...pageProps} />
       </CartItemsContext.Provider>
     </ThemeProvider>

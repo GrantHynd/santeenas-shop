@@ -4,7 +4,6 @@ import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-import { Header } from "../../src/app/components/Header";
 import { patchCart, postCart } from "../../src/carts/api";
 import { getProduct, getProducts, Product } from "../../src/products/api";
 import { convertToDisplayPrice } from "../../src/products/utils";
@@ -64,7 +63,6 @@ export default function ProductDetail({ product }: ProductProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Header />
         <Container maxWidth="lg">
           <Grid
             item

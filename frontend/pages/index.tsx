@@ -12,7 +12,6 @@ import {
   Typography,
 } from "@mui/material";
 import { getProducts, Product } from "../src/products/api";
-import { Header } from "../src/app/components/Header";
 import { convertToDisplayPrice } from "../src/products/utils";
 
 export async function getStaticProps() {
@@ -34,7 +33,6 @@ export default function Products({ products }: ProductsProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Header />
         <Grid
           item
           container
