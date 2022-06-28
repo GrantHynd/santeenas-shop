@@ -1,5 +1,3 @@
-import { useContext, useState } from "react";
-
 import Cookies from "js-cookie";
 import { Button, Container, Divider, Grid, Typography } from "@mui/material";
 import Head from "next/head";
@@ -7,18 +5,9 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { dehydrate, QueryClient, useMutation, useQuery } from "react-query";
 
-import {
-  CartResponse,
-  getCart,
-  patchCart,
-  postCart,
-} from "../../src/carts/api";
-import {
-  CartActionType,
-  CartDispatchContext,
-} from "../../src/carts/cartContext";
 import { getProduct, getProducts, Product } from "../../src/products/api";
 import { convertToDisplayPrice } from "../../src/products/utils";
+import { useCart } from "../../src/carts/useCart";
 
 export async function getStaticPaths() {
   const products = await getProducts();
@@ -54,58 +43,11 @@ type ProductProps = {
 };
 
 export default function ProductDetail({ params }: ProductProps) {
-  const cartDispatch = useContext(CartDispatchContext);
-  const [isCartUpdated, setIsCartUpdated] = useState(false);
-  const [tempCart, setTempCart] = useState<CartResponse | undefined>();
-
+  const router = useRouter();
+  const { createCart, updateCart } = useCart();
   const { data: product } = useQuery(["product", params.id], () =>
     getProduct(params.id)
   );
-  const { mutate: createCart } = useMutation(
-    ({ data }: any) => postCart(data),
-    {
-      onError: () => {
-        console.log("error with creating cart");
-      },
-      onSuccess: (cart) => {
-        console.log("success with creating cart");
-        Cookies.set("cart", cart.sessionId);
-        setIsCartUpdated(true);
-        setTempCart(cart);
-      },
-    }
-  );
-  const { mutate: updateCart } = useMutation(
-    ({ id, data }: any) => patchCart(id, data),
-    {
-      onError: () => {
-        console.log("error with updating cart");
-      },
-      onSuccess: (cart) => {
-        console.log("success with updating cart");
-        setIsCartUpdated(true);
-        setTempCart(cart);
-      },
-    }
-  );
-  useQuery(
-    ["cart", tempCart?.sessionId],
-    () => getCart(tempCart?.sessionId as string),
-    {
-      enabled: isCartUpdated && !!tempCart,
-      onError: () => {
-        console.log("error: cart no refreshed");
-      },
-      onSuccess: (cart) => {
-        console.log("fetched new cart after update");
-        cartDispatch?.({ type: CartActionType.UPDATE, payload: cart });
-        setIsCartUpdated(false);
-        setTempCart(undefined);
-      },
-    }
-  );
-
-  const router = useRouter();
   const price = convertToDisplayPrice(product?.price || 0);
 
   async function addItemToCart(e: React.MouseEvent, product?: Product) {
@@ -113,7 +55,7 @@ export default function ProductDetail({ params }: ProductProps) {
     if (Cookies.get("cart") === undefined) {
       createCart({
         data: {
-          products: [product],
+          products: [product as Product],
           quantity: 1,
         },
       });
@@ -121,7 +63,7 @@ export default function ProductDetail({ params }: ProductProps) {
       updateCart({
         id: Cookies.get("cart") as string,
         data: {
-          products: [product],
+          products: [product as Product],
           quantity: 1,
         },
       });
