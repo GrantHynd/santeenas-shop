@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useReducer, useState } from "react";
+
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
@@ -6,11 +7,18 @@ import "@fontsource/roboto/700.css";
 import { ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import Cookies from "js-cookie";
+import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 
 import "./styles.css";
 import { Header } from "../src/app/components/Header";
-import { CartResponse, getCart } from "../src/carts/api";
-import { CartItemsContext } from "../src/carts/cartContext";
+import { getCart } from "../src/carts/api";
+import {
+  CartActionType,
+  CartDispatchContext,
+  CartContext,
+  cartReducer,
+  initCart,
+} from "../src/carts/cartContext";
 
 const theme = createTheme({
   palette: {
@@ -24,14 +32,18 @@ const theme = createTheme({
 });
 
 // This default export is required in a new `pages/_app.js` file.
-export default function MyApp({ Component = React.Component, pageProps = {} }) {
+export default function MyApp({
+  Component = React.Component,
+  pageProps = { dehydratedState: {} },
+}) {
+  const [queryClient] = useState(() => new QueryClient());
   const [cartIdCookie] = useState(Cookies.get("cart") || undefined);
-  const [cart, setCart] = useState<CartResponse | undefined>();
+  const [cart, cartDispatch] = useReducer(cartReducer, initCart);
 
   const getAndSetCart = useCallback(async () => {
     if (cartIdCookie) {
       const cartResponse = await getCart(cartIdCookie);
-      setCart(cartResponse);
+      cartDispatch({ type: CartActionType.UPDATE, payload: cartResponse });
     }
   }, [cartIdCookie, getCart]);
 
@@ -49,10 +61,16 @@ export default function MyApp({ Component = React.Component, pageProps = {} }) {
 
   return (
     <ThemeProvider theme={theme}>
-      <CartItemsContext.Provider value={cart}>
-        <Header />
-        <Component {...pageProps} />
-      </CartItemsContext.Provider>
+      <QueryClientProvider client={queryClient}>
+        <Hydrate state={pageProps.dehydratedState}>
+          <CartDispatchContext.Provider value={cartDispatch}>
+            <CartContext.Provider value={cart}>
+              <Header />
+              <Component {...pageProps} />
+            </CartContext.Provider>
+          </CartDispatchContext.Provider>
+        </Hydrate>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }

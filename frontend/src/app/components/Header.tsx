@@ -13,7 +13,7 @@ import * as xLink from "next/link";
 import CartIcon from "@mui/icons-material/ShoppingBasketOutlined";
 import CloseIcon from "@mui/icons-material/CloseOutlined";
 
-import { CartItemsContext } from "../../carts/cartContext";
+import { CartContext } from "../../carts/cartContext";
 
 export function Header() {
   return (
@@ -43,7 +43,7 @@ export function Header() {
 }
 
 function Navigation() {
-  const cart = useContext(CartItemsContext);
+  const cart = useContext(CartContext);
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDrawer =
@@ -116,7 +116,7 @@ function Navigation() {
             ) : (
               cart?.products?.map((product) => {
                 return (
-                  <React.Fragment>
+                  <React.Fragment key={product.productId}>
                     <Grid container gap={1} marginX={2} marginY={2}>
                       <Grid item>Product: {product.productId}</Grid>
                       <Grid item>Quantity: {product.quantity}</Grid>

@@ -11,21 +11,24 @@ import {
   Link,
   Typography,
 } from "@mui/material";
-import { getProducts, Product } from "../src/products/api";
+import { dehydrate, QueryClient, useQuery } from "react-query";
+
+import { getProducts } from "../src/products/api";
 import { convertToDisplayPrice } from "../src/products/utils";
 
 export async function getStaticProps() {
+  const queryClient = new QueryClient();
+  await queryClient.prefetchQuery("products", () => getProducts());
+
   return {
-    props: { products: await getProducts() },
-    revalidate: 60,
+    props: {
+      dehydratedState: dehydrate(queryClient),
+    },
   };
 }
 
-type ProductsProps = {
-  products: Product[];
-};
-
-export default function Products({ products }: ProductsProps) {
+export default function Products() {
+  const { data: products } = useQuery("products", getProducts);
   return (
     <div className="container">
       <Head>
@@ -42,7 +45,7 @@ export default function Products({ products }: ProductsProps) {
           direction="row"
           justifyContent=""
         >
-          {products.map((product) => {
+          {products?.map((product) => {
             return (
               <Card key={product.id} sx={{ width: 320 }}>
                 <xLink.default href={`/products/${product.id}`} passHref={true}>
