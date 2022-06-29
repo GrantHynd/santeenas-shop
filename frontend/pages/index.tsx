@@ -11,9 +11,11 @@ import {
   Link,
   Typography,
 } from "@mui/material";
+import Cookies from "js-cookie";
 import { dehydrate, QueryClient, useQuery } from "react-query";
 
-import { getProducts } from "../src/products/api";
+import { useCart } from "../src/carts/useCart";
+import { getProducts, Product } from "../src/products/api";
 import { convertToDisplayPrice } from "../src/products/utils";
 
 export async function getStaticProps() {
@@ -28,7 +30,29 @@ export async function getStaticProps() {
 }
 
 export default function Products() {
+  const { createCart, updateCart } = useCart();
   const { data: products } = useQuery("products", getProducts);
+
+  async function addItemToCart(e: React.MouseEvent, product?: Product) {
+    //TODO: When item is already in cart, and user clicks to add to cart again, the quantity is incremented.
+    if (Cookies.get("cart") === undefined) {
+      createCart({
+        data: {
+          products: [product as Product],
+          quantity: 1,
+        },
+      });
+    } else {
+      updateCart({
+        id: Cookies.get("cart") as string,
+        data: {
+          products: [product as Product],
+          quantity: 1,
+        },
+      });
+    }
+  }
+
   return (
     <div className="container">
       <Head>
@@ -79,7 +103,11 @@ export default function Products() {
                   </Typography>
                 </CardContent>
                 <CardActions style={{ justifyContent: "end" }}>
-                  <Button size="small" variant="text">
+                  <Button
+                    onClick={(e) => addItemToCart(e, product)}
+                    size="small"
+                    variant="text"
+                  >
                     Add to cart - £{convertToDisplayPrice(product.price)}
                   </Button>
                 </CardActions>
