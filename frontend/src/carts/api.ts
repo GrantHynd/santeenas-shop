@@ -1,12 +1,12 @@
 import { Product } from "../products/api";
 
 export type CartPostRequest = {
-  products: Product[];
+  productId: string;
   quantity: number;
 };
 
 export type CartPatchRequest = {
-  products: Product[];
+  productId: string;
   quantity: number;
 };
 

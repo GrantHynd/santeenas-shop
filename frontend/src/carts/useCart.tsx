@@ -3,42 +3,48 @@ import { useContext, useState } from "react";
 import Cookies from "js-cookie";
 import { useMutation, useQuery } from "react-query";
 
-import { getCart, patchCart, postCart } from "./api";
-import { CartActionType, CartDispatchContext } from "./cartContext";
-import { Product } from "../products/api";
+import {
+  CartPatchRequest,
+  CartPostRequest,
+  getCart,
+  patchCart,
+  postCart,
+} from "./api";
+import {
+  CartActionType,
+  CartContext,
+  CartDispatchContext,
+} from "./cartContext";
 
 type PostCartData = {
-  data: {
-    products: Product[];
-    quantity: number;
-  };
+  data: CartPostRequest;
 };
 
 type PatchCartData = {
   id: string;
-  data: PostCartData["data"];
+  data: CartPatchRequest;
 };
 
-export function useCart(cartId?: string) {
+export function useCart() {
+  const cart = useContext(CartContext);
   const cartDispatch = useContext(CartDispatchContext);
   const [cartUpdated, setCartUpdated] = useState(false);
   const sessionId = Cookies.get("cart");
 
-  function createOrUpdateCart(product: Product) {
-    //TODO: When item is already in cart, and user clicks to add to cart again, the quantity is incremented.
-    if (Cookies.get("cart") === undefined) {
+  function createOrUpdateCart(productId: string, quantity: number) {
+    if (!cart?.sessionId) {
       createCart({
         data: {
-          products: [product as Product],
-          quantity: 1,
+          productId,
+          quantity,
         },
       });
     } else {
       updateCart({
-        id: Cookies.get("cart") as string,
+        id: cart.id as string,
         data: {
-          products: [product as Product],
-          quantity: 1,
+          productId,
+          quantity,
         },
       });
     }
