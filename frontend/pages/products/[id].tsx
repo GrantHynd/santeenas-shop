@@ -1,11 +1,10 @@
 import { Button, Container, Divider, Grid, Typography } from "@mui/material";
-import Cookies from "js-cookie";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { dehydrate, QueryClient, useQuery } from "react-query";
 
-import { getProduct, getProducts, Product } from "../../src/products/api";
+import { getProduct, getProducts } from "../../src/products/api";
 import { convertToDisplayPrice } from "../../src/products/utils";
 import { useCart } from "../../src/carts/useCart";
 
@@ -44,15 +43,11 @@ type ProductProps = {
 
 export default function ProductDetail({ params }: ProductProps) {
   const router = useRouter();
-  const { createOrUpdateCart } = useCart(Cookies.get("cart"));
+  const { createOrUpdateCart } = useCart();
   const { data: product } = useQuery(["product", params.id], () =>
     getProduct(params.id)
   );
   const price = convertToDisplayPrice(product?.price || 0);
-
-  async function addItemToCart(e: React.MouseEvent, product?: Product) {
-    createOrUpdateCart(product as Product);
-  }
 
   if (router.isFallback) {
     return <div>Loading...</div>;
@@ -92,7 +87,7 @@ export default function ProductDetail({ params }: ProductProps) {
                 {product?.description}
               </Typography>
               <Button
-                onClick={(e) => addItemToCart(e, product)}
+                onClick={() => createOrUpdateCart(product?.id as string, 1)}
                 variant="contained"
               >
                 Add to cart - £{price}

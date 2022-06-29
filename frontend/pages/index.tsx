@@ -11,11 +11,10 @@ import {
   Link,
   Typography,
 } from "@mui/material";
-import Cookies from "js-cookie";
 import { dehydrate, QueryClient, useQuery } from "react-query";
 
 import { useCart } from "../src/carts/useCart";
-import { getProducts, Product } from "../src/products/api";
+import { getProducts } from "../src/products/api";
 import { convertToDisplayPrice } from "../src/products/utils";
 
 export async function getStaticProps() {
@@ -30,12 +29,8 @@ export async function getStaticProps() {
 }
 
 export default function Products() {
-  const { createOrUpdateCart } = useCart(Cookies.get("cart"));
+  const { createOrUpdateCart } = useCart();
   const { data: products } = useQuery("products", getProducts);
-
-  async function addItemToCart(e: React.MouseEvent, product?: Product) {
-    createOrUpdateCart(product as Product);
-  }
 
   return (
     <div className="container">
@@ -88,7 +83,7 @@ export default function Products() {
                 </CardContent>
                 <CardActions style={{ justifyContent: "end" }}>
                   <Button
-                    onClick={(e) => addItemToCart(e, product)}
+                    onClick={() => createOrUpdateCart(product?.id as string, 1)}
                     size="small"
                     variant="text"
                   >

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 
 import {
   Box,
@@ -46,6 +46,12 @@ function Navigation() {
   const cart = useContext(CartContext);
   const [isOpen, setIsOpen] = useState(false);
 
+  const totalCartItems = useMemo(() => {
+    return cart?.products?.reduce((acc, item) => {
+      return acc + item.quantity;
+    }, 0);
+  }, [cart]);
+
   const toggleDrawer =
     (isOpen: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
       if (
@@ -81,7 +87,7 @@ function Navigation() {
         >
           <CartIcon />
           <Typography variant="body1" color="#fff">
-            {cart?.products?.length === 0 ? "" : cart?.products?.length}
+            {totalCartItems === 0 ? "" : totalCartItems}
           </Typography>
         </Button>
         <SwipeableDrawer

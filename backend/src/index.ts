@@ -9,7 +9,18 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Products
+const includeProductsResponse = {
+  products: {
+    select: {
+      productId: true,
+      quantity: true,
+    },
+  },
+};
+
+/**
+ * Get all products.
+ */
 app.get("/products", async (req, res, next) => {
   const { orderByPrice } = req.query;
 
@@ -25,6 +36,9 @@ app.get("/products", async (req, res, next) => {
   }
 });
 
+/**
+ * Get a product.
+ */
 app.get("/products/:id", async (req, res, next) => {
   try {
     const product = await prisma.product.findUnique({
@@ -36,31 +50,19 @@ app.get("/products/:id", async (req, res, next) => {
   }
 });
 
-// Carts
-const includeProductsResponse = {
-  products: {
-    select: {
-      productId: true,
-      quantity: true,
-    },
-  },
-};
-
+/**
+ * Create a new cart with it's first product.
+ */
 app.post("/carts/", async (req, res, next) => {
   const data: Prisma.CartCreateInput = {
     sessionId: randomUUID(),
     products: {
-      create: req.body.products.map(
-        (product: Prisma.ProductCreateWithoutCartsInput) => {
-          const productInCart = {
-            quantity: req.body.quantity,
-            product: {
-              connect: { id: product.id },
-            },
-          };
-          return productInCart;
-        }
-      ),
+      create: {
+        quantity: req.body.quantity,
+        product: {
+          connect: { id: req.body.productId },
+        },
+      },
     },
   };
 
@@ -75,26 +77,35 @@ app.post("/carts/", async (req, res, next) => {
   }
 });
 
+/**
+ * Update a cart with a product, or update the quantity of a product in the cart.
+ */
 app.patch("/carts/:id", async (req, res, next) => {
   const data: Prisma.CartUpdateInput = {
     products: {
-      create: req.body.products.map(
-        (product: Prisma.ProductUpdateWithoutCartsInput) => {
-          const productInCart = {
-            quantity: req.body.quantity,
-            product: {
-              connect: { id: product.id },
-            },
-          };
-          return productInCart;
-        }
-      ),
+      upsert: {
+        where: {
+          productId_cartId: {
+            productId: req.body.productId,
+            cartId: req.params.id,
+          },
+        },
+        create: {
+          quantity: req.body.quantity,
+          product: {
+            connect: { id: req.body.productId },
+          },
+        },
+        update: {
+          quantity: { increment: req.body.quantity },
+        },
+      },
     },
   };
 
   try {
     const cart = await prisma.cart.update<Prisma.CartUpdateArgs>({
-      where: { sessionId: req.params.id },
+      where: { id: req.params.id },
       data,
       include: includeProductsResponse,
     });
@@ -104,10 +115,13 @@ app.patch("/carts/:id", async (req, res, next) => {
   }
 });
 
-app.get("/carts/:id", async (req, res, next) => {
+/**
+ * Get a cart by it's session id.
+ */
+app.get("/carts/:sessionId", async (req, res, next) => {
   try {
     const cart = await prisma.cart.findUnique({
-      where: { sessionId: req.params.id },
+      where: { sessionId: req.params.sessionId },
       include: includeProductsResponse,
     });
     res.json(cart);
