@@ -11,22 +11,32 @@ import {
   Link,
   Typography,
 } from "@mui/material";
+import Cookies from "js-cookie";
+import { dehydrate, QueryClient, useQuery } from "react-query";
+
+import { useCart } from "../src/carts/useCart";
 import { getProducts, Product } from "../src/products/api";
-import { Header } from "../src/app/components/Header";
 import { convertToDisplayPrice } from "../src/products/utils";
 
 export async function getStaticProps() {
+  const queryClient = new QueryClient();
+  await queryClient.prefetchQuery("products", () => getProducts());
+
   return {
-    props: { products: await getProducts() },
-    revalidate: 60,
+    props: {
+      dehydratedState: dehydrate(queryClient),
+    },
   };
 }
 
-type ProductsProps = {
-  products: Product[];
-};
+export default function Products() {
+  const { createOrUpdateCart } = useCart(Cookies.get("cart"));
+  const { data: products } = useQuery("products", getProducts);
 
-export default function Products({ products }: ProductsProps) {
+  async function addItemToCart(e: React.MouseEvent, product?: Product) {
+    createOrUpdateCart(product as Product);
+  }
+
   return (
     <div className="container">
       <Head>
@@ -34,7 +44,6 @@ export default function Products({ products }: ProductsProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Header />
         <Grid
           item
           container
@@ -44,7 +53,7 @@ export default function Products({ products }: ProductsProps) {
           direction="row"
           justifyContent=""
         >
-          {products.map((product) => {
+          {products?.map((product) => {
             return (
               <Card key={product.id} sx={{ width: 320 }}>
                 <xLink.default href={`/products/${product.id}`} passHref={true}>
@@ -78,7 +87,11 @@ export default function Products({ products }: ProductsProps) {
                   </Typography>
                 </CardContent>
                 <CardActions style={{ justifyContent: "end" }}>
-                  <Button size="small" variant="text">
+                  <Button
+                    onClick={(e) => addItemToCart(e, product)}
+                    size="small"
+                    variant="text"
+                  >
                     Add to cart - £{convertToDisplayPrice(product.price)}
                   </Button>
                 </CardActions>

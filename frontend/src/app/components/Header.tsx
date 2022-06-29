@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 
 import {
   Box,
@@ -12,7 +12,8 @@ import {
 import * as xLink from "next/link";
 import CartIcon from "@mui/icons-material/ShoppingBasketOutlined";
 import CloseIcon from "@mui/icons-material/CloseOutlined";
-import { Product } from "../../products/api";
+
+import { CartContext } from "../../carts/cartContext";
 
 export function Header() {
   return (
@@ -42,8 +43,7 @@ export function Header() {
 }
 
 function Navigation() {
-  //TODO: replace with a user's cart items
-  const [cartItems, setCartItems] = useState<Array<Product>>([]);
+  const cart = useContext(CartContext);
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDrawer =
@@ -81,7 +81,7 @@ function Navigation() {
         >
           <CartIcon />
           <Typography variant="body1" color="#fff">
-            {cartItems.length === 0 ? "" : cartItems.length}
+            {cart?.products?.length === 0 ? "" : cart?.products?.length}
           </Typography>
         </Button>
         <SwipeableDrawer
@@ -90,19 +90,19 @@ function Navigation() {
           onClose={toggleDrawer(false)}
           onOpen={toggleDrawer(true)}
         >
-          <Grid container sx={{ width: 400 }} gap={1} marginX={2} marginY={2}>
+          <Grid container sx={{ width: 400 }} gap={1} paddingX={2} paddingY={2}>
             <Grid item xs={10}>
               <Typography variant="h5">Cart</Typography>
             </Grid>
-            <Grid item xs={1}>
+            <Grid item xs={1} sx={{ textAlign: "center" }}>
               <Button onClick={toggleDrawer(false)}>
                 <CloseIcon />
               </Button>
             </Grid>
           </Grid>
           <Divider />
-          <div style={{ position: "relative", width: "100%", height: "100%" }}>
-            {cartItems.length === 0 && (
+          <div style={{ position: "relative", width: 400, height: "100%" }}>
+            {cart?.products?.length === 0 ? (
               <div
                 style={{
                   position: "absolute",
@@ -113,6 +113,18 @@ function Navigation() {
               >
                 Your cart is empty
               </div>
+            ) : (
+              cart?.products?.map((product) => {
+                return (
+                  <React.Fragment key={product.productId}>
+                    <Grid container gap={1} marginX={2} marginY={2}>
+                      <Grid item>Product: {product.productId}</Grid>
+                      <Grid item>Quantity: {product.quantity}</Grid>
+                    </Grid>
+                    <Divider />
+                  </React.Fragment>
+                );
+              })
             )}
           </div>
         </SwipeableDrawer>
