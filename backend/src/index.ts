@@ -10,23 +10,30 @@ app.use(express.json());
 app.use(cors());
 
 // Products
-app.get("/products", async (req, res) => {
+app.get("/products", async (req, res, next) => {
   const { orderByPrice } = req.query;
 
-  const products = await prisma.product.findMany({
-    orderBy: {
-      price: orderByPrice as Prisma.SortOrder,
-    },
-  });
-
-  res.json(products);
+  try {
+    const products = await prisma.product.findMany({
+      orderBy: {
+        price: orderByPrice as Prisma.SortOrder,
+      },
+    });
+    res.json(products);
+  } catch (error) {
+    next(error);
+  }
 });
 
-app.get("/products/:id", async (req, res) => {
-  const product = await prisma.product.findUnique({
-    where: { id: req.params.id },
-  });
-  res.json(product);
+app.get("/products/:id", async (req, res, next) => {
+  try {
+    const product = await prisma.product.findUnique({
+      where: { id: req.params.id },
+    });
+    res.json(product);
+  } catch (error) {
+    next(error);
+  }
 });
 
 // Carts
@@ -39,7 +46,7 @@ const includeProductsResponse = {
   },
 };
 
-app.post("/carts/", async (req, res) => {
+app.post("/carts/", async (req, res, next) => {
   const data: Prisma.CartCreateInput = {
     sessionId: randomUUID(),
     products: {
@@ -57,14 +64,18 @@ app.post("/carts/", async (req, res) => {
     },
   };
 
-  const cart = await prisma.cart.create<Prisma.CartCreateArgs>({
-    data,
-    include: includeProductsResponse,
-  });
-  res.json(cart);
+  try {
+    const cart = await prisma.cart.create<Prisma.CartCreateArgs>({
+      data,
+      include: includeProductsResponse,
+    });
+    res.json(cart);
+  } catch (error) {
+    next(error);
+  }
 });
 
-app.patch("/carts/:id", async (req, res) => {
+app.patch("/carts/:id", async (req, res, next) => {
   const data: Prisma.CartUpdateInput = {
     products: {
       create: req.body.products.map(
@@ -81,20 +92,28 @@ app.patch("/carts/:id", async (req, res) => {
     },
   };
 
-  const cart = await prisma.cart.update<Prisma.CartUpdateArgs>({
-    where: { sessionId: req.params.id },
-    data,
-    include: includeProductsResponse,
-  });
-  res.json(cart);
+  try {
+    const cart = await prisma.cart.update<Prisma.CartUpdateArgs>({
+      where: { sessionId: req.params.id },
+      data,
+      include: includeProductsResponse,
+    });
+    res.json(cart);
+  } catch (error) {
+    next(error);
+  }
 });
 
-app.get("/carts/:id", async (req, res) => {
-  const cart = await prisma.cart.findUnique({
-    where: { sessionId: req.params.id },
-    include: includeProductsResponse,
-  });
-  res.json(cart);
+app.get("/carts/:id", async (req, res, next) => {
+  try {
+    const cart = await prisma.cart.findUnique({
+      where: { sessionId: req.params.id },
+      include: includeProductsResponse,
+    });
+    res.json(cart);
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.listen(8000, () =>
