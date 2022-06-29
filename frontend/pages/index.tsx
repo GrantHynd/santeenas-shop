@@ -30,27 +30,11 @@ export async function getStaticProps() {
 }
 
 export default function Products() {
-  const { createCart, updateCart } = useCart();
+  const { createOrUpdateCart } = useCart(Cookies.get("cart"));
   const { data: products } = useQuery("products", getProducts);
 
   async function addItemToCart(e: React.MouseEvent, product?: Product) {
-    //TODO: When item is already in cart, and user clicks to add to cart again, the quantity is incremented.
-    if (Cookies.get("cart") === undefined) {
-      createCart({
-        data: {
-          products: [product as Product],
-          quantity: 1,
-        },
-      });
-    } else {
-      updateCart({
-        id: Cookies.get("cart") as string,
-        data: {
-          products: [product as Product],
-          quantity: 1,
-        },
-      });
-    }
+    createOrUpdateCart(product as Product);
   }
 
   return (

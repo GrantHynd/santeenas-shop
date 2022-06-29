@@ -1,9 +1,9 @@
-import Cookies from "js-cookie";
 import { Button, Container, Divider, Grid, Typography } from "@mui/material";
+import Cookies from "js-cookie";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { dehydrate, QueryClient, useMutation, useQuery } from "react-query";
+import { dehydrate, QueryClient, useQuery } from "react-query";
 
 import { getProduct, getProducts, Product } from "../../src/products/api";
 import { convertToDisplayPrice } from "../../src/products/utils";
@@ -44,30 +44,14 @@ type ProductProps = {
 
 export default function ProductDetail({ params }: ProductProps) {
   const router = useRouter();
-  const { createCart, updateCart } = useCart();
+  const { createOrUpdateCart } = useCart(Cookies.get("cart"));
   const { data: product } = useQuery(["product", params.id], () =>
     getProduct(params.id)
   );
   const price = convertToDisplayPrice(product?.price || 0);
 
   async function addItemToCart(e: React.MouseEvent, product?: Product) {
-    //TODO: When item is already in cart, and user clicks to add to cart again, the quantity is incremented.
-    if (Cookies.get("cart") === undefined) {
-      createCart({
-        data: {
-          products: [product as Product],
-          quantity: 1,
-        },
-      });
-    } else {
-      updateCart({
-        id: Cookies.get("cart") as string,
-        data: {
-          products: [product as Product],
-          quantity: 1,
-        },
-      });
-    }
+    createOrUpdateCart(product as Product);
   }
 
   if (router.isFallback) {

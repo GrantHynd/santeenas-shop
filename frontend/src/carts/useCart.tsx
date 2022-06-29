@@ -19,10 +19,30 @@ type PatchCartData = {
   data: PostCartData["data"];
 };
 
-export function useCart() {
+export function useCart(cartId?: string) {
   const cartDispatch = useContext(CartDispatchContext);
   const [cartUpdated, setCartUpdated] = useState(false);
   const sessionId = Cookies.get("cart");
+
+  function createOrUpdateCart(product: Product) {
+    //TODO: When item is already in cart, and user clicks to add to cart again, the quantity is incremented.
+    if (Cookies.get("cart") === undefined) {
+      createCart({
+        data: {
+          products: [product as Product],
+          quantity: 1,
+        },
+      });
+    } else {
+      updateCart({
+        id: Cookies.get("cart") as string,
+        data: {
+          products: [product as Product],
+          quantity: 1,
+        },
+      });
+    }
+  }
 
   const { mutate: createCart } = useMutation(
     ({ data }: PostCartData) => postCart(data),
@@ -65,5 +85,5 @@ export function useCart() {
     }
   );
 
-  return { createCart, updateCart, updatedCart };
+  return { createOrUpdateCart, createCart, updateCart, updatedCart };
 }
