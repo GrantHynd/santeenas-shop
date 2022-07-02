@@ -25,8 +25,12 @@ type PatchCartData = {
   data: CartPatchRequest;
 };
 
+/**
+ * Hook to manage triggering cart updates and updating UI state
+ * @returns callback to trigger mutation + cart response
+ */
 export function useCart() {
-  const cart = useContext(CartContext);
+  const { cart } = useContext(CartContext);
   const cartDispatch = useContext(CartDispatchContext);
   const [cartUpdated, setCartUpdated] = useState(false);
   const sessionId = Cookies.get("cart");
@@ -56,9 +60,7 @@ export function useCart() {
       onError: () => {
         console.log("error with creating cart");
       },
-      onSuccess: (cart) => {
-        console.log("success with creating cart");
-        Cookies.set("cart", cart.sessionId);
+      onSuccess: () => {
         setCartUpdated(true);
       },
     }
@@ -69,8 +71,7 @@ export function useCart() {
       onError: () => {
         console.log("error with updating cart");
       },
-      onSuccess: (cart) => {
-        console.log("success with updating cart");
+      onSuccess: () => {
         setCartUpdated(true);
       },
     }
@@ -83,13 +84,15 @@ export function useCart() {
       onError: () => {
         console.log("error: cart no refreshed");
       },
-      onSuccess: (cart) => {
-        console.log("fetched new cart after update");
-        cartDispatch?.({ type: CartActionType.UPDATE, payload: cart });
+      onSuccess: (updatedCart) => {
+        cartDispatch?.({
+          type: CartActionType.UPDATE,
+          payload: { isCartOpen: true, cart: updatedCart },
+        });
         setCartUpdated(false);
       },
     }
   );
 
-  return { createOrUpdateCart, createCart, updateCart, updatedCart };
+  return { createOrUpdateCart, updatedCart };
 }

@@ -16,7 +16,7 @@ export type CartResponse = {
   updatedAt?: string;
   sessionId: string;
   products?: {
-    productId: string;
+    product: Product;
     quantity: number;
   }[];
 };

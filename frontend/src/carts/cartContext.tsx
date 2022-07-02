@@ -3,28 +3,46 @@ import { createContext } from "react";
 import { CartResponse } from "./api";
 
 export enum CartActionType {
+  OPEN = "OPEN",
+  CLOSE = "CLOSE",
   UPDATE = "UPDATE",
 }
 
 export type CartAction = {
   type: CartActionType;
-  payload?: CartResponse;
+  payload?: {
+    isCartOpen?: boolean;
+    cart?: CartResponse;
+  };
 };
 
-export const CartContext = createContext<CartResponse | undefined>(undefined);
+export type CartState = {
+  isCartOpen: boolean;
+  cart?: CartResponse;
+};
+
+export const initCart: CartState = {
+  isCartOpen: false,
+  cart: { sessionId: "" },
+};
+
+export const CartContext = createContext<CartState>(initCart);
 
 export const CartDispatchContext = createContext<
   React.Dispatch<CartAction> | undefined
 >(undefined);
 
-export const initCart: CartResponse = {
-  sessionId: "",
-};
-
-export function cartReducer(state: CartResponse, action: CartAction) {
+export function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
+    case CartActionType.OPEN:
+      return { ...state, ...{ isCartOpen: true } };
+    case CartActionType.CLOSE:
+      return { ...state, ...{ isCartOpen: false } };
     case CartActionType.UPDATE:
-      return { ...state, ...action.payload };
+      if (action.payload) {
+        return { ...state, ...action.payload };
+      }
+      return state;
     default:
       return state;
   }
