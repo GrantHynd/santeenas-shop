@@ -19,6 +19,7 @@ import {
   cartReducer,
   initCart,
 } from "../src/carts/cartContext";
+import { CartDrawer } from "../src/carts/CartDrawer";
 
 const theme = createTheme({
   palette: {
@@ -38,12 +39,15 @@ export default function MyApp({
 }) {
   const [queryClient] = useState(() => new QueryClient());
   const [cartIdCookie] = useState(Cookies.get("cart") || undefined);
-  const [cart, cartDispatch] = useReducer(cartReducer, initCart);
+  const [cartState, cartDispatch] = useReducer(cartReducer, initCart);
 
   const getAndSetCart = useCallback(async () => {
     if (cartIdCookie) {
       const cartResponse = await getCart(cartIdCookie);
-      cartDispatch({ type: CartActionType.UPDATE, payload: cartResponse });
+      cartDispatch({
+        type: CartActionType.UPDATE,
+        payload: { cart: cartResponse },
+      });
     }
   }, [cartIdCookie, getCart]);
 
@@ -64,7 +68,8 @@ export default function MyApp({
       <QueryClientProvider client={queryClient}>
         <Hydrate state={pageProps.dehydratedState}>
           <CartDispatchContext.Provider value={cartDispatch}>
-            <CartContext.Provider value={cart}>
+            <CartContext.Provider value={cartState}>
+              <CartDrawer />
               <Header />
               <Component {...pageProps} />
             </CartContext.Provider>

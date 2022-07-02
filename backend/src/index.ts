@@ -12,7 +12,7 @@ app.use(cors());
 const includeProductsResponse = {
   products: {
     select: {
-      productId: true,
+      product: true,
       quantity: true,
     },
   },
