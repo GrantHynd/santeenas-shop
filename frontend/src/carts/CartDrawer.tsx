@@ -16,10 +16,12 @@ import {
   CartContext,
   CartDispatchContext,
 } from "./cartContext";
+import { useDeleteCartItem } from "./useDeleteCartItem";
 
 export function CartDrawer() {
   const { isCartOpen, cart } = useContext(CartContext);
   const cartDispatch = useContext(CartDispatchContext);
+  const { removeCartItem } = useDeleteCartItem();
 
   const totalCartPrice = useMemo(() => {
     return cart?.products?.reduce((acc, item) => {
@@ -94,6 +96,15 @@ export function CartDrawer() {
                       </Typography>
                       <Typography variant="body2">
                         Quantity: {item.quantity}
+                      </Typography>
+                      <Typography
+                        onClick={() =>
+                          removeCartItem({ productId: item.product.id })
+                        }
+                        variant="body2"
+                        sx={{ color: "primary.main", cursor: "pointer" }}
+                      >
+                        Remove item
                       </Typography>
                     </Grid>
                   </Grid>
