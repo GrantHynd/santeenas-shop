@@ -9,12 +9,12 @@ import {
   getCart,
   patchCart,
   postCart,
-} from "./api";
+} from "../api";
 import {
   CartActionType,
   CartContext,
   CartDispatchContext,
-} from "./cartContext";
+} from "../cartContext";
 
 type PostCartData = {
   data: CartPostRequest;
@@ -29,7 +29,7 @@ type PatchCartData = {
  * Hook to manage triggering cart updates and updating UI state
  * @returns callback to trigger mutation + cart response
  */
-export function useCart() {
+export function useUpdateCart() {
   const { cart } = useContext(CartContext);
   const cartDispatch = useContext(CartDispatchContext);
   const [cartUpdated, setCartUpdated] = useState(false);

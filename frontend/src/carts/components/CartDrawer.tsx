@@ -10,13 +10,13 @@ import {
 import CloseIcon from "@mui/icons-material/CloseOutlined";
 import Image from "next/image";
 
-import { convertToDisplayPrice } from "../products/utils";
+import { convertToDisplayPrice } from "../../products/utils";
+import { useDeleteCartItem } from "../hooks/useDeleteCartItem";
 import {
   CartActionType,
   CartContext,
   CartDispatchContext,
-} from "./cartContext";
-import { useDeleteCartItem } from "./useDeleteCartItem";
+} from "../cartContext";
 
 export function CartDrawer() {
   const { isCartOpen, cart } = useContext(CartContext);

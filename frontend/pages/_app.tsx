@@ -19,7 +19,7 @@ import {
   cartReducer,
   initCart,
 } from "../src/carts/cartContext";
-import { CartDrawer } from "../src/carts/CartDrawer";
+import { CartDrawer } from "../src/carts/components/CartDrawer";
 
 const theme = createTheme({
   palette: {

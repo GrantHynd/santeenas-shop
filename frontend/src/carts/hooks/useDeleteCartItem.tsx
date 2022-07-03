@@ -2,19 +2,20 @@ import { useContext, useState } from "react";
 
 import Cookies from "js-cookie";
 import { useMutation, useQuery } from "react-query";
+
 import {
   deleteCart,
   deleteCartItem,
   DeleteCartItemParams,
   getCart,
-} from "./api";
+} from "../api";
 import {
   CartAction,
   CartActionType,
   CartContext,
   CartDispatchContext,
   initCart,
-} from "./cartContext";
+} from "../cartContext";
 
 type DeleteCartItemParamsWithoutCartId = Omit<DeleteCartItemParams, "cartId">;
 

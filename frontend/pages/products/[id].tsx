@@ -6,7 +6,7 @@ import { dehydrate, QueryClient, useQuery } from "react-query";
 
 import { getProduct, getProducts } from "../../src/products/api";
 import { convertToDisplayPrice } from "../../src/products/utils";
-import { useCart } from "../../src/carts/useCart";
+import { useUpdateCart } from "../../src/carts/hooks/useUpdateCart";
 
 export async function getStaticPaths() {
   const products = await getProducts();
@@ -43,7 +43,7 @@ type ProductProps = {
 
 export default function ProductDetail({ params }: ProductProps) {
   const router = useRouter();
-  const { createOrUpdateCart } = useCart();
+  const { createOrUpdateCart } = useUpdateCart();
   const { data: product } = useQuery(["product", params.id], () =>
     getProduct(params.id)
   );
