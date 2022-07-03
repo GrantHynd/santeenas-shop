@@ -62,6 +62,7 @@ export function useCart() {
       },
       onSuccess: () => {
         setCartUpdated(true);
+        Cookies.set("cart", cart?.sessionId as string);
       },
     }
   );
