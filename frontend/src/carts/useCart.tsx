@@ -81,7 +81,7 @@ export function useCart() {
     ["cart", sessionId],
     () => getCart(sessionId as string),
     {
-      enabled: cartUpdated,
+      enabled: cartUpdated && !!sessionId,
       onError: () => {
         console.log("error: cart no refreshed");
       },
