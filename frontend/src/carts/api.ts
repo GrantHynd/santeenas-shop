@@ -11,14 +11,38 @@ export type CartPatchRequest = {
 };
 
 export type CartResponse = {
-  id?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  id: string;
+  createdAt: string;
+  updatedAt: string | null;
   sessionId: string;
   products?: {
     product: Product;
     quantity: number;
   }[];
+};
+
+export type DeleteCartItemParams = {
+  cartId: string;
+  productId: string;
+};
+
+export type DeleteCartItemResponse = {
+  productId: string;
+  cartId: string;
+  quantity: number;
+  assignedAt: string;
+  assignedBy: string | null;
+};
+
+export type DeleteCartParams = {
+  id: string;
+};
+
+export type DeleteCartResponse = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  sessionId: string;
 };
 
 export async function postCart(postData: CartPostRequest) {
@@ -48,5 +72,27 @@ export async function patchCart(id: string, patchData: CartPostRequest) {
 export async function getCart(id: string) {
   const response = await fetch(`http://localhost:8000/carts/${id}`);
   const data: CartResponse = await response.json();
+  return data;
+}
+
+export async function deleteCartItem({
+  cartId,
+  productId,
+}: DeleteCartItemParams) {
+  const response = await fetch(
+    `http://localhost:8000/carts/${cartId}/products/${productId}`,
+    {
+      method: "DELETE",
+    }
+  );
+  const data: DeleteCartItemResponse = await response.json();
+  return data;
+}
+
+export async function deleteCart({ id }: DeleteCartParams) {
+  const response = await fetch(`http://localhost:8000/carts/${id}`, {
+    method: "DELETE",
+  });
+  const data: DeleteCartResponse = await response.json();
   return data;
 }

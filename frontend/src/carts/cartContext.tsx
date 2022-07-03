@@ -23,7 +23,7 @@ export type CartState = {
 
 export const initCart: CartState = {
   isCartOpen: false,
-  cart: { sessionId: "" },
+  cart: { id: "", createdAt: "", updatedAt: "", sessionId: "" },
 };
 
 export const CartContext = createContext<CartState>(initCart);
