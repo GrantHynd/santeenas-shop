@@ -60,9 +60,9 @@ export function useCart() {
       onError: () => {
         console.log("error with creating cart");
       },
-      onSuccess: () => {
+      onSuccess: (newCart) => {
         setCartUpdated(true);
-        Cookies.set("cart", cart?.sessionId as string);
+        Cookies.set("cart", newCart.sessionId);
       },
     }
   );
