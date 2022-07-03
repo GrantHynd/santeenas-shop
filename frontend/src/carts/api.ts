@@ -1,3 +1,5 @@
+import Cookies from "js-cookie";
+
 import { Product } from "../products/api";
 
 export type CartPostRequest = {
@@ -71,7 +73,10 @@ export async function patchCart(id: string, patchData: CartPostRequest) {
 
 export async function getCart(id: string) {
   const response = await fetch(`http://localhost:8000/carts/${id}`);
-  const data: CartResponse = await response.json();
+  const data: CartResponse | null = await response.json();
+  if (!data) {
+    Cookies.remove("cart");
+  }
   return data;
 }
 

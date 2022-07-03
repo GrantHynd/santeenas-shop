@@ -6,6 +6,7 @@ import { useMutation, useQuery } from "react-query";
 import {
   CartPatchRequest,
   CartPostRequest,
+  CartResponse,
   getCart,
   patchCart,
   postCart,
@@ -33,6 +34,7 @@ export function useUpdateCart() {
   const { cart } = useContext(CartContext);
   const cartDispatch = useContext(CartDispatchContext);
   const [cartUpdated, setCartUpdated] = useState(false);
+  const [cartUpdateFailed, setCartUpdateFailed] = useState(false);
   const sessionId = Cookies.get("cart");
 
   function createOrUpdateCart(productId: string, quantity: number) {
@@ -71,6 +73,7 @@ export function useUpdateCart() {
     {
       onError: () => {
         console.log("error with updating cart");
+        setCartUpdateFailed(true);
       },
       onSuccess: () => {
         setCartUpdated(true);
@@ -81,14 +84,14 @@ export function useUpdateCart() {
     ["cart", sessionId],
     () => getCart(sessionId as string),
     {
-      enabled: cartUpdated && !!sessionId,
+      enabled: (cartUpdated || cartUpdateFailed) && !!sessionId,
       onError: () => {
         console.log("error: cart no refreshed");
       },
       onSuccess: (updatedCart) => {
         cartDispatch?.({
           type: CartActionType.UPDATE,
-          payload: { isCartOpen: true, cart: updatedCart },
+          payload: { isCartOpen: true, cart: updatedCart as CartResponse },
         });
         setCartUpdated(false);
       },

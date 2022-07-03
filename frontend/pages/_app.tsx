@@ -11,7 +11,7 @@ import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 
 import "./styles.css";
 import { Header } from "../src/app/components/Header";
-import { getCart } from "../src/carts/api";
+import { CartResponse, getCart } from "../src/carts/api";
 import {
   CartActionType,
   CartDispatchContext,
@@ -46,7 +46,7 @@ export default function MyApp({
       const cartResponse = await getCart(cartIdCookie);
       cartDispatch({
         type: CartActionType.UPDATE,
-        payload: { cart: cartResponse },
+        payload: { cart: cartResponse as CartResponse },
       });
     }
   }, [cartIdCookie, getCart]);

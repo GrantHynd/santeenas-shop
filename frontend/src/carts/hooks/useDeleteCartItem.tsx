@@ -60,15 +60,17 @@ export function useDeleteCartItem() {
         console.log("error: cart no refreshed");
       },
       onSuccess: (updatedCart) => {
-        let payload: CartAction["payload"] = { cart: updatedCart };
-        if (!updatedCart.products || updatedCart.products.length === 0) {
-          removeCart();
-          payload = initCart;
+        if (updatedCart) {
+          let payload: CartAction["payload"] = { cart: updatedCart };
+          if (!updatedCart.products || updatedCart.products.length === 0) {
+            removeCart();
+            payload = initCart;
+          }
+          cartDispatch?.({
+            type: CartActionType.UPDATE,
+            payload,
+          });
         }
-        cartDispatch?.({
-          type: CartActionType.UPDATE,
-          payload,
-        });
 
         setCartItemDeleted(false);
       },
