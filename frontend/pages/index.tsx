@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { dehydrate, QueryClient, useQuery } from "react-query";
 
-import { useCart } from "../src/carts/useCart";
+import { useUpdateCart } from "../src/carts/hooks/useUpdateCart";
 import { getProducts } from "../src/products/api";
 import { convertToDisplayPrice } from "../src/products/utils";
 
@@ -29,7 +29,7 @@ export async function getStaticProps() {
 }
 
 export default function Products() {
-  const { createOrUpdateCart } = useCart();
+  const { createOrUpdateCart } = useUpdateCart();
   const { data: products } = useQuery("products", getProducts);
 
   return (

@@ -6,15 +6,16 @@ import { useMutation, useQuery } from "react-query";
 import {
   CartPatchRequest,
   CartPostRequest,
+  CartResponse,
   getCart,
   patchCart,
   postCart,
-} from "./api";
+} from "../api";
 import {
   CartActionType,
   CartContext,
   CartDispatchContext,
-} from "./cartContext";
+} from "../cartContext";
 
 type PostCartData = {
   data: CartPostRequest;
@@ -29,10 +30,11 @@ type PatchCartData = {
  * Hook to manage triggering cart updates and updating UI state
  * @returns callback to trigger mutation + cart response
  */
-export function useCart() {
+export function useUpdateCart() {
   const { cart } = useContext(CartContext);
   const cartDispatch = useContext(CartDispatchContext);
   const [cartUpdated, setCartUpdated] = useState(false);
+  const [cartUpdateFailed, setCartUpdateFailed] = useState(false);
   const sessionId = Cookies.get("cart");
 
   function createOrUpdateCart(productId: string, quantity: number) {
@@ -71,6 +73,7 @@ export function useCart() {
     {
       onError: () => {
         console.log("error with updating cart");
+        setCartUpdateFailed(true);
       },
       onSuccess: () => {
         setCartUpdated(true);
@@ -81,14 +84,14 @@ export function useCart() {
     ["cart", sessionId],
     () => getCart(sessionId as string),
     {
-      enabled: cartUpdated,
+      enabled: (cartUpdated || cartUpdateFailed) && !!sessionId,
       onError: () => {
         console.log("error: cart no refreshed");
       },
       onSuccess: (updatedCart) => {
         cartDispatch?.({
           type: CartActionType.UPDATE,
-          payload: { isCartOpen: true, cart: updatedCart },
+          payload: { isCartOpen: true, cart: updatedCart as CartResponse },
         });
         setCartUpdated(false);
       },

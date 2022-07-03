@@ -130,6 +130,42 @@ app.get("/carts/:sessionId", async (req, res, next) => {
   }
 });
 
+/*
+ * Remove a product from a cart.
+ */
+app.delete("/carts/:cartId/products/:productId", async (req, res, next) => {
+  try {
+    const deletedCartItem =
+      await prisma.productsInCarts.delete<Prisma.ProductsInCartsDeleteArgs>({
+        where: {
+          productId_cartId: {
+            productId: req.params.productId,
+            cartId: req.params.cartId,
+          },
+        },
+      });
+    res.json(deletedCartItem);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/*
+ * Delete Cart.
+ */
+app.delete("/carts/:id", async (req, res, next) => {
+  try {
+    const deletedCart = await prisma.cart.delete<Prisma.CartDeleteArgs>({
+      where: {
+        id: req.params.id,
+      },
+    });
+    res.json(deletedCart);
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.listen(8000, () =>
   console.log(`🚀 Server ready at: http://localhost:8000`)
 );

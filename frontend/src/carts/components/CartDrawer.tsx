@@ -10,16 +10,18 @@ import {
 import CloseIcon from "@mui/icons-material/CloseOutlined";
 import Image from "next/image";
 
-import { convertToDisplayPrice } from "../products/utils";
+import { convertToDisplayPrice } from "../../products/utils";
+import { useDeleteCartItem } from "../hooks/useDeleteCartItem";
 import {
   CartActionType,
   CartContext,
   CartDispatchContext,
-} from "./cartContext";
+} from "../cartContext";
 
 export function CartDrawer() {
   const { isCartOpen, cart } = useContext(CartContext);
   const cartDispatch = useContext(CartDispatchContext);
+  const { removeCartItem } = useDeleteCartItem();
 
   const totalCartPrice = useMemo(() => {
     return cart?.products?.reduce((acc, item) => {
@@ -94,6 +96,15 @@ export function CartDrawer() {
                       </Typography>
                       <Typography variant="body2">
                         Quantity: {item.quantity}
+                      </Typography>
+                      <Typography
+                        onClick={() =>
+                          removeCartItem({ productId: item.product.id })
+                        }
+                        variant="body2"
+                        sx={{ color: "primary.main", cursor: "pointer" }}
+                      >
+                        Remove item
                       </Typography>
                     </Grid>
                   </Grid>
