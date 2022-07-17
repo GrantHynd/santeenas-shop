@@ -30,7 +30,7 @@ app.get("/products", async (req, res, next) => {
         price: orderByPrice as Prisma.SortOrder,
       },
     });
-    res.json(products);
+    res.status(200).json(products);
   } catch (error) {
     next(error);
   }
@@ -44,7 +44,7 @@ app.get("/products/:id", async (req, res, next) => {
     const product = await prisma.product.findUnique({
       where: { id: req.params.id },
     });
-    res.json(product);
+    res.status(200).json(product);
   } catch (error) {
     next(error);
   }
@@ -71,7 +71,7 @@ app.post("/carts/", async (req, res, next) => {
       data,
       include: includeProductsResponse,
     });
-    res.json(cart);
+    res.status(201).json(cart);
   } catch (error) {
     next(error);
   }
@@ -109,7 +109,7 @@ app.patch("/carts/:id", async (req, res, next) => {
       data,
       include: includeProductsResponse,
     });
-    res.json(cart);
+    res.status(201).json(cart);
   } catch (error) {
     next(error);
   }
@@ -124,7 +124,7 @@ app.get("/carts/:sessionId", async (req, res, next) => {
       where: { sessionId: req.params.sessionId },
       include: includeProductsResponse,
     });
-    res.json(cart);
+    res.status(200).json(cart);
   } catch (error) {
     next(error);
   }
@@ -144,7 +144,7 @@ app.delete("/carts/:cartId/products/:productId", async (req, res, next) => {
           },
         },
       });
-    res.json(deletedCartItem);
+    res.status(200).json(deletedCartItem);
   } catch (error) {
     next(error);
   }
@@ -160,7 +160,7 @@ app.delete("/carts/:id", async (req, res, next) => {
         id: req.params.id,
       },
     });
-    res.json(deletedCart);
+    res.status(200).json(deletedCart);
   } catch (error) {
     next(error);
   }
