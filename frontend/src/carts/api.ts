@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+import { httpDelete, httpGet, httpPatch, httpPost } from "../app/makeRequest";
 
 import { Product } from "../products/api";
 
@@ -47,33 +48,26 @@ export type DeleteCartResponse = {
   sessionId: string;
 };
 
-export async function postCart(postData: CartPostRequest) {
-  const response = await fetch("http://localhost:8000/carts/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(postData),
-  });
-  const data: CartResponse = await response.json();
+export async function postCart(body: CartPostRequest) {
+  const data = await httpPost<CartPostRequest, CartResponse>(
+    "http://localhost:8000/carts/",
+    body
+  );
   return data;
 }
 
-export async function patchCart(id: string, patchData: CartPostRequest) {
-  const response = await fetch(`http://localhost:8000/carts/${id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(patchData),
-  });
-  const data: CartResponse = await response.json();
+export async function patchCart(id: string, body: CartPatchRequest) {
+  const data = await httpPatch<CartPatchRequest, CartResponse>(
+    `http://localhost:8000/carts/${id}`,
+    body
+  );
   return data;
 }
 
 export async function getCart(id: string) {
-  const response = await fetch(`http://localhost:8000/carts/${id}`);
-  const data: CartResponse | null = await response.json();
+  const data = await httpGet<CartResponse | null>(
+    `http://localhost:8000/carts/${id}`
+  );
   if (!data) {
     Cookies.remove("cart");
   }
@@ -84,13 +78,9 @@ export async function deleteCartItem({
   cartId,
   productId,
 }: DeleteCartItemParams) {
-  const response = await fetch(
-    `http://localhost:8000/carts/${cartId}/products/${productId}`,
-    {
-      method: "DELETE",
-    }
+  const data = await httpDelete<DeleteCartItemResponse>(
+    `http://localhost:8000/carts/${cartId}/products/${productId}`
   );
-  const data: DeleteCartItemResponse = await response.json();
   return data;
 }
 
