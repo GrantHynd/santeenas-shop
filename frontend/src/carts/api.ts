@@ -48,6 +48,27 @@ export type DeleteCartResponse = {
   sessionId: string;
 };
 
+export type CheckoutSessionBody = {
+  cart: {
+    products: {
+      priceId: string;
+      quantity: number;
+    }[];
+  };
+};
+
+export type CheckoutSessionResponse = {
+  checkoutUrl: string;
+};
+
+export async function postCheckoutSessions(body: CheckoutSessionBody) {
+  const data = await httpPost<CheckoutSessionBody, CheckoutSessionResponse>(
+    "http://localhost:8000/checkout-sessions/",
+    body
+  );
+  return data;
+}
+
 export async function postCart(body: CartPostRequest) {
   const data = await httpPost<CartPostRequest, CartResponse>(
     "http://localhost:8000/carts/",
