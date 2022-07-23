@@ -7,6 +7,7 @@ CREATE TABLE "Product" (
     "description" TEXT NOT NULL,
     "imageUrl" TEXT NOT NULL,
     "price" DECIMAL(12,2) NOT NULL,
+    "priceId" TEXT NOT NULL,
     "stock" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
@@ -32,6 +33,9 @@ CREATE TABLE "ProductsInCarts" (
 
     CONSTRAINT "ProductsInCarts_pkey" PRIMARY KEY ("productId","cartId")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Product_priceId_key" ON "Product"("priceId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Cart_sessionId_key" ON "Cart"("sessionId");

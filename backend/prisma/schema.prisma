@@ -15,6 +15,7 @@ model Product {
   description String
   imageUrl    String
   price       Decimal           @db.Decimal(12, 2)
+  priceId     String            @unique
   stock       Int               @default(0)
   carts       ProductsInCarts[]
 }
