@@ -15,6 +15,7 @@ const products: Prisma.ProductCreateInput[] = [
     description: "Santeena first ever product",
     imageUrl: "https://dummyimage.com/630x810/ed407a/fff.jpg&text=product1",
     price: 15.0,
+    priceId: "price_1LOkfvKIydu32l6Y89DJmmPn",
     stock: 100,
     carts: {
       create: [
@@ -53,6 +54,7 @@ const products: Prisma.ProductCreateInput[] = [
     description: "The perfect present",
     imageUrl: "https://dummyimage.com/630x810/ed407a/fff.jpg&text=product2",
     price: 30.0,
+    priceId: "price_1LOkgcKIydu32l6YeMtvsowD",
     stock: 20,
     carts: {
       create: [
@@ -92,6 +94,7 @@ const products: Prisma.ProductCreateInput[] = [
     description: "Lines that run across across multiple nails to stand out.",
     imageUrl: "https://dummyimage.com/630x810/ed407a/fff.jpg&text=product3",
     price: 19.99,
+    priceId: "price_1LOkh2KIydu32l6YsB0g6ypK",
     stock: 1,
   },
   {
@@ -100,6 +103,7 @@ const products: Prisma.ProductCreateInput[] = [
       "Nails to complete the bright biker girl look, and set you apart!",
     imageUrl: "https://dummyimage.com/630x810/ed407a/fff.jpg&text=product4",
     price: 14.99,
+    priceId: "price_1LOkhcKIydu32l6Y2OMFssou",
     stock: 0,
   },
 ];
