@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 
 import {
   Button,
@@ -9,19 +9,38 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/CloseOutlined";
 import Image from "next/image";
+import { loadStripe } from "@stripe/stripe-js";
 
 import { convertToDisplayPrice } from "../../products/utils";
+import useCheckout from "../hooks/useCheckout";
 import { useDeleteCartItem } from "../hooks/useDeleteCartItem";
 import {
   CartActionType,
   CartContext,
   CartDispatchContext,
 } from "../cartContext";
+import { CartResponse } from "../api";
+
+loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string);
+
+function convertCartForCheckout(cart: CartResponse | undefined) {
+  if (!cart || !cart.products) {
+    throw Error("No cart or products exists to proceed to checkout!");
+  }
+  return {
+    cart: {
+      products: cart.products?.map(({ product, quantity }) => {
+        return { priceId: product.priceId, quantity };
+      }),
+    },
+  };
+}
 
 export function CartDrawer() {
   const { isCartOpen, cart } = useContext(CartContext);
   const cartDispatch = useContext(CartDispatchContext);
   const { removeCartItem } = useDeleteCartItem();
+  const { checkout } = useCheckout();
 
   const totalCartPrice = useMemo(() => {
     return cart?.products?.reduce((acc, item) => {
@@ -42,6 +61,14 @@ export function CartDrawer() {
       type: isOpen ? CartActionType.OPEN : CartActionType.CLOSE,
     });
   }
+
+  const onCheckout = useCallback(
+    (e: React.SyntheticEvent<{}, Event>) => {
+      e.preventDefault();
+      checkout(convertCartForCheckout(cart));
+    },
+    [cart, checkout]
+  );
 
   return (
     <SwipeableDrawer
@@ -118,13 +145,12 @@ export function CartDrawer() {
                 <Typography variant="body2" marginBottom={2}>
                   Shipping and taxes calculated at checkout
                 </Typography>
-                <Button
-                  onClick={(e) => toggleDrawer(e, false)}
-                  variant="contained"
-                  fullWidth
-                >
-                  Checkout - £{convertToDisplayPrice(totalCartPrice as number)}
-                </Button>
+                <form onSubmit={(e) => onCheckout(e)}>
+                  <Button type="submit" variant="contained" fullWidth>
+                    Checkout - £
+                    {convertToDisplayPrice(totalCartPrice as number)}
+                  </Button>
+                </form>
               </Grid>
             </Grid>
           </div>
