@@ -5,9 +5,19 @@ import { randomUUID } from "crypto";
 
 const prisma = new PrismaClient();
 const app = express();
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 app.use(express.json());
 app.use(cors());
+
+type CheckoutSessionBody = {
+  cart: {
+    products: {
+      priceId: string;
+      quantity: number;
+    }[];
+  };
+};
 
 const includeProductsResponse = {
   products: {
@@ -161,6 +171,28 @@ app.delete("/carts/:id", async (req, res, next) => {
       },
     });
     res.status(200).json(deletedCart);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/*
+ * Create Stripe's checkout session and redirect user to their hosted checkout page.
+ */
+app.post("/checkout-sessions", async (req, res, next) => {
+  const { cart } = req.body as CheckoutSessionBody;
+  const line_items = cart.products.map(({ priceId, quantity }) => {
+    return { price: priceId, quantity };
+  });
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      line_items,
+      mode: "payment",
+      success_url: `${req.headers.origin}/?success=true`,
+      cancel_url: `${req.headers.origin}/?canceled=true`,
+    });
+    res.status(201).json({ checkoutUrl: session.url });
   } catch (error) {
     next(error);
   }
