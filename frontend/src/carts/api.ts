@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+import { Stripe } from "stripe";
 import { httpDelete, httpGet, httpPatch, httpPost } from "../app/makeRequest";
 
 import { Product } from "../products/api";
@@ -57,14 +58,26 @@ export type CheckoutSessionBody = {
   };
 };
 
-export type CheckoutSessionResponse = {
+export type PostCheckoutSessionResponse = {
   checkoutUrl: string;
 };
 
+export type GetCheckoutSessionResponse = {
+  session: Stripe.Response<Stripe.Checkout.Session>;
+  customer: Stripe.Response<Stripe.Customer>;
+};
+
 export async function postCheckoutSessions(body: CheckoutSessionBody) {
-  const data = await httpPost<CheckoutSessionBody, CheckoutSessionResponse>(
+  const data = await httpPost<CheckoutSessionBody, PostCheckoutSessionResponse>(
     "http://localhost:8000/checkout-sessions/",
     body
+  );
+  return data;
+}
+
+export async function getCheckoutSession(id: string) {
+  const data = await httpGet<GetCheckoutSessionResponse>(
+    `http://localhost:8000/checkout-sessions/${id}`
   );
   return data;
 }
@@ -86,9 +99,7 @@ export async function patchCart(id: string, body: CartPatchRequest) {
 }
 
 export async function getCart(id: string) {
-  const data = await httpGet<CartResponse | null>(
-    `http://localhost:8000/carts/${id}`
-  );
+  const data = await httpGet<CartResponse>(`http://localhost:8000/carts/${id}`);
   if (!data) {
     Cookies.remove("cart");
   }
@@ -106,9 +117,7 @@ export async function deleteCartItem({
 }
 
 export async function deleteCart({ id }: DeleteCartParams) {
-  const response = await fetch(`http://localhost:8000/carts/${id}`, {
-    method: "DELETE",
-  });
+  const response = await fetch(`http://localhost:8000/carts/${id}`);
   const data: DeleteCartResponse = await response.json();
   return data;
 }
