@@ -2,10 +2,13 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import express from "express";
 import cors from "cors";
 import { randomUUID } from "crypto";
+import Stripe from "stripe";
 
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+  apiVersion: "2020-08-27",
+});
 const prisma = new PrismaClient();
 const app = express();
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 app.use(express.json());
 app.use(cors());
