@@ -192,10 +192,27 @@ app.post("/checkout-sessions", async (req, res, next) => {
     const session = await stripe.checkout.sessions.create({
       line_items,
       mode: "payment",
-      success_url: `${req.headers.origin}/?success=true`,
-      cancel_url: `${req.headers.origin}/?canceled=true`,
+      success_url: `${req.headers.origin}/checkout/success/{CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.origin}`,
     });
     res.status(201).json({ checkoutUrl: session.url });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * Get a checkout session.
+ */
+app.get("/checkout-sessions/:sessionId", async (req, res, next) => {
+  try {
+    const session = await stripe.checkout.sessions.retrieve(
+      req.params.sessionId
+    );
+    const customer = await stripe.customers.retrieve(
+      session.customer as string
+    );
+    res.status(200).json({ session, customer });
   } catch (error) {
     next(error);
   }
