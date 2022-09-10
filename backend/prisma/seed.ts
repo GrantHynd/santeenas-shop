@@ -22,6 +22,7 @@ const products: Prisma.ProductCreateInput[] = [
         {
           assignedBy: userId1,
           assignedAt: new Date(),
+          quantity: 1,
           cart: {
             connectOrCreate: {
               where: { id: cartId1 },
@@ -108,10 +109,64 @@ const products: Prisma.ProductCreateInput[] = [
   },
 ];
 
+const orders: Prisma.OrderCreateInput[] = [
+  {
+    stripeId:
+      "cs_test_b1GQus39RkBNrCmpnvfZ3o919C1XbwO5OzGI942Bbo4TQgQ6ak1lkEYmDQ",
+    price: 75.0,
+    status: "complete",
+    paymentStatus: "paid",
+    fulfilled: true,
+    customer: {
+      create: {
+        name: "Grant Hynd",
+        email: "test_email@test.com",
+        phone: "07123456789",
+        addresses: {
+          createMany: {
+            data: [
+              {
+                name: "Grant's Friend",
+                line1: "23 abc street",
+                postalCode: "AB12 3SR",
+                county: "Orange",
+                city: "Machine",
+                country: "GB",
+              },
+              {
+                name: "Grant Hynd",
+                line1: "Golden Mansion",
+                line2: "1A Ealing Broadway",
+                postalCode: "W12 1GH",
+                county: "Ealing",
+                city: "London",
+                country: "GB",
+              },
+            ],
+          },
+        },
+      },
+    },
+    cart: {
+      connect: {
+        id: cartId1,
+      },
+    },
+  },
+];
+
 async function createProducts() {
   for (let product of products) {
     await prisma.product.create({
       data: product,
+    });
+  }
+}
+
+async function createOrders() {
+  for (let order of orders) {
+    await prisma.order.create({
+      data: order,
     });
   }
 }
@@ -122,8 +177,14 @@ async function main() {
   await prisma.product.deleteMany();
   console.log("Deleted all products");
 
+  await prisma.order.deleteMany();
+  console.log("Deleted all orders");
+
   await createProducts();
   console.log("Added products");
+
+  await createOrders();
+  console.log("Added orders");
 
   console.log(`Finished seeding ...`);
 }
