@@ -29,6 +29,7 @@ function convertCartForCheckout(cart: CartResponse | undefined) {
   }
   return {
     cart: {
+      sessionId: cart.sessionId,
       products: cart.products?.map(({ product, quantity }) => {
         return { priceId: product.priceId, quantity };
       }),

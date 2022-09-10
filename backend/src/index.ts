@@ -3,6 +3,8 @@ import express from "express";
 import cors from "cors";
 import { randomUUID } from "crypto";
 import Stripe from "stripe";
+import { includeProductsResponse } from "./utils";
+import { fulfillOrder } from "./checkout/fulfilOrder";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2020-08-27",
@@ -10,25 +12,25 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 const prisma = new PrismaClient();
 const app = express();
 
-app.use(express.json());
+// stripe checkout webhook uses raw body, all other endpoints parse json body
+app.use((req, res, next) => {
+  if (req.originalUrl === "/checkout-webhook") {
+    next();
+  } else {
+    express.json()(req, res, next);
+  }
+});
+
 app.use(cors());
 
 type CheckoutSessionBody = {
   cart: {
+    sessionId: string;
     products: {
       priceId: string;
       quantity: number;
     }[];
   };
-};
-
-const includeProductsResponse = {
-  products: {
-    select: {
-      product: true,
-      quantity: true,
-    },
-  },
 };
 
 /**
@@ -190,8 +192,35 @@ app.post("/checkout-sessions", async (req, res, next) => {
 
   try {
     const session = await stripe.checkout.sessions.create({
+      billing_address_collection: "required",
+      client_reference_id: cart.sessionId,
       line_items,
       mode: "payment",
+      shipping_address_collection: {
+        allowed_countries: ["GB"],
+      },
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            type: "fixed_amount",
+            fixed_amount: {
+              amount: 0,
+              currency: "GBP",
+            },
+            display_name: "Free shipping",
+            delivery_estimate: {
+              minimum: {
+                unit: "business_day",
+                value: 5,
+              },
+              maximum: {
+                unit: "business_day",
+                value: 7,
+              },
+            },
+          },
+        },
+      ],
       success_url: `${req.headers.origin}/checkout/success/{CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.origin}`,
     });
@@ -217,6 +246,35 @@ app.get("/checkout-sessions/:sessionId", async (req, res, next) => {
     next(error);
   }
 });
+
+/**
+ * Stripe webhook, listens for events from stripe's checkout page,
+ * and triggers fulfil order on completed checkout session.
+ */
+app.post(
+  "/checkout-webhook",
+  express.raw({ type: "application/json" }),
+  (req: express.Request, res: express.Response) => {
+    const stripeSignature = req.headers["stripe-signature"];
+    let event: Stripe.Event;
+
+    try {
+      event = stripe.webhooks.constructEvent(
+        req.body as Buffer,
+        stripeSignature || "",
+        process.env.STRIPE_WEBHOOK_SECRET_KEY || ""
+      );
+    } catch (err: any) {
+      return res.status(400).send(`Stripe webhook error: ${err.message}`);
+    }
+
+    if (event.type === "checkout.session.completed") {
+      const stripeOrder = event.data.object as Stripe.Checkout.Session;
+      fulfillOrder(prisma, stripeOrder);
+    }
+    res.status(200);
+  }
+);
 
 app.listen(8000, () =>
   console.log(`🚀 Server ready at: http://localhost:8000`)
