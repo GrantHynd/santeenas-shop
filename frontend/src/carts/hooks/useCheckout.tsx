@@ -1,7 +1,7 @@
 import { useMutation } from "react-query";
 import {
   CheckoutSessionBody,
-  CheckoutSessionResponse,
+  PostCheckoutSessionResponse,
   postCheckoutSessions,
 } from "../api";
 
@@ -12,7 +12,7 @@ export default function useCheckout() {
       onError: () => {
         console.log("error with creating checkout session");
       },
-      onSuccess: ({ checkoutUrl }: CheckoutSessionResponse) => {
+      onSuccess: ({ checkoutUrl }: PostCheckoutSessionResponse) => {
         window.location.href = checkoutUrl;
       },
     }

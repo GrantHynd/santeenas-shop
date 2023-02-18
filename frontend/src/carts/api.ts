@@ -51,6 +51,7 @@ export type DeleteCartResponse = {
 
 export type CheckoutSessionBody = {
   cart: {
+    sessionId: string;
     products: {
       priceId: string;
       quantity: number;
