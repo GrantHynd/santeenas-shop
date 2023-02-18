@@ -1,7 +1,7 @@
 import React, { useContext, useMemo, useState } from "react";
 
-import { Box, Button, Grid, Link, Typography } from "@mui/material";
-import * as xLink from "next/link";
+import { Box, Button, Grid, Typography } from "@mui/material";
+import Link from "next/link";
 import CartIcon from "@mui/icons-material/ShoppingBasketOutlined";
 
 import {
@@ -12,28 +12,17 @@ import {
 
 export function Header() {
   return (
-    <React.Fragment>
-      <Grid
-        container
-        item
-        xs={12}
-        direction="column"
-        alignContent="center"
-        bgcolor="primary.main"
-        padding={10}
-        spacing={2}
-      >
-        <Typography variant="h3" color="#fff">
-          <xLink.default href="/" passHref={true}>
-            <Link color="#fff">Santeena's Shop</Link>
-          </xLink.default>
-        </Typography>
-        <Typography variant="body1" color="#fff">
-          customise your look
-        </Typography>
-      </Grid>
+    <>
+      <div className="flex justify-center bg-primary">
+        <div className="flex flex-col mt-14 px-6">
+          <Link href="/" passHref={true}>
+            <a className="text-4xl text-white">Santeena's Shop</a>
+          </Link>
+          <span className="text-md text-white">customise your look</span>
+        </div>
+      </div>
       <Navigation />
-    </React.Fragment>
+    </>
   );
 }
 
