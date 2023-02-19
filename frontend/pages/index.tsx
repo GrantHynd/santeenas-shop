@@ -1,6 +1,6 @@
 import Head from "next/head";
 import Image from "next/image";
-import * as xLink from "next/link";
+import Link from "next/link";
 
 import {
   Button,
@@ -8,7 +8,6 @@ import {
   CardActions,
   CardContent,
   Grid,
-  Link,
   Typography,
 } from "@mui/material";
 import { dehydrate, QueryClient, useQuery } from "react-query";
@@ -51,28 +50,22 @@ export default function Products() {
           {products?.map((product) => {
             return (
               <Card key={product.id} sx={{ width: 320 }}>
-                <xLink.default href={`/products/${product.id}`} passHref={true}>
-                  <Link>
-                    <Image
-                      layout="responsive"
-                      width="320"
-                      height="400"
-                      src={product.imageUrl}
-                      alt={product.description}
-                    />
-                  </Link>
-                </xLink.default>
+                <Link href={`/products/${product.id}`}>
+                  <Image
+                    sizes="100vw"
+                    width="320"
+                    height="400"
+                    src={product.imageUrl}
+                    alt={product.description}
+                    className="w-full h-auto"
+                  />
+                </Link>
                 <CardContent>
-                  <xLink.default
-                    href={`/products/${product.id}`}
-                    passHref={true}
-                  >
-                    <Link>
-                      <Typography gutterBottom variant="h5" component="div">
-                        {product.name}
-                      </Typography>
-                    </Link>
-                  </xLink.default>
+                  <Link href={`/products/${product.id}`}>
+                    <Typography gutterBottom variant="h5" component="div">
+                      {product.name}
+                    </Typography>
+                  </Link>
                   <Typography
                     variant="body2"
                     color="text.secondary"
