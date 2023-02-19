@@ -55,7 +55,7 @@ export default function ProductDetail({ params }: ProductProps) {
   return (
     <div className="container">
       <Head>
-        <title>{product?.name} | Styles by Santeena</title>
+        <title>{`${product?.name} | Styles by Santeena`}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
@@ -70,11 +70,12 @@ export default function ProductDetail({ params }: ProductProps) {
           >
             <Grid item xs={7}>
               <Image
-                layout="responsive"
-                width="320"
-                height="400"
+                sizes="100vw"
+                width="670"
+                height="830"
                 src={product?.imageUrl || ""}
-                alt={product?.description}
+                alt={product?.description as string}
+                className="w-full h-auto"
               />
             </Grid>
             <Grid item xs={4} marginTop={20}>

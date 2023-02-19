@@ -110,9 +110,9 @@ export function CartDrawer() {
                     <Grid item>
                       <Image
                         src={item.product.imageUrl}
-                        layout="fixed"
                         width={150}
                         height={200}
+                        alt={item.product.description}
                       />
                     </Grid>
                     <Grid item>
