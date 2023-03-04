@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 import {
-  Button,
   Card,
   CardActions,
   CardContent,
@@ -75,13 +74,12 @@ export default function Products() {
                   </Typography>
                 </CardContent>
                 <CardActions style={{ justifyContent: "end" }}>
-                  <Button
+                  <button
                     onClick={() => createOrUpdateCart(product?.id as string, 1)}
-                    size="small"
-                    variant="text"
+                    className="btn btn-sm btn-ghost"
                   >
                     Add to cart - £{convertToDisplayPrice(product.price)}
-                  </Button>
+                  </button>
                 </CardActions>
               </Card>
             );

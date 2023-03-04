@@ -1,4 +1,4 @@
-import { Button, Container, Divider, Grid, Typography } from "@mui/material";
+import { Container, Divider, Grid, Typography } from "@mui/material";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -87,12 +87,12 @@ export default function ProductDetail({ params }: ProductProps) {
               <Typography variant="body1" marginY={4}>
                 {product?.description}
               </Typography>
-              <Button
+              <button
                 onClick={() => createOrUpdateCart(product?.id as string, 1)}
-                variant="contained"
+                className="btn btn-sm"
               >
                 Add to cart - £{price}
-              </Button>
+              </button>
             </Grid>
           </Grid>
         </Container>

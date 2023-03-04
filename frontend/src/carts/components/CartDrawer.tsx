@@ -1,12 +1,6 @@
 import React, { useCallback, useContext, useMemo } from "react";
 
-import {
-  Button,
-  Divider,
-  Grid,
-  SwipeableDrawer,
-  Typography,
-} from "@mui/material";
+import { Divider, Grid, SwipeableDrawer, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/CloseOutlined";
 import Image from "next/image";
 import { loadStripe } from "@stripe/stripe-js";
@@ -83,9 +77,12 @@ export function CartDrawer() {
           <Typography variant="h5">Cart</Typography>
         </Grid>
         <Grid item xs={1} sx={{ textAlign: "center" }}>
-          <Button onClick={(e) => toggleDrawer(e, false)}>
+          <button
+            onClick={(e) => toggleDrawer(e, false)}
+            className="btn btn-outline btn-square btn-primary"
+          >
             <CloseIcon />
-          </Button>
+          </button>
         </Grid>
       </Grid>
       <Divider />
@@ -147,10 +144,10 @@ export function CartDrawer() {
                   Shipping and taxes calculated at checkout
                 </Typography>
                 <form onSubmit={(e) => onCheckout(e)}>
-                  <Button type="submit" variant="contained" fullWidth>
+                  <button type="submit" className="btn btn-primary btn-block">
                     Checkout - £
                     {convertToDisplayPrice(totalCartPrice as number)}
-                  </Button>
+                  </button>
                 </form>
               </Grid>
             </Grid>
