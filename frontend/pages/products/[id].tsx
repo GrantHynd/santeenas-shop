@@ -1,4 +1,3 @@
-import { Container, Divider, Grid, Typography } from "@mui/material";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -53,50 +52,42 @@ export default function ProductDetail({ params }: ProductProps) {
     return <div>Loading...</div>;
   }
   return (
-    <div className="container">
+    <>
       <Head>
         <title>{`${product?.name} | Styles by Santeena`}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Container maxWidth="lg">
-          <Grid
-            item
-            container
-            gap={4}
-            paddingY={3}
-            direction="row"
-            justifyContent=""
-          >
-            <Grid item xs={7}>
+        <div className="container mx-auto max-w-screen-lg my-12">
+          <div className="flex flex-wrap space-x-4 lg:space-x-12">
+            <div className="flex-auto sm:max-w-sm">
               <Image
                 sizes="100vw"
                 width="670"
                 height="830"
                 src={product?.imageUrl || ""}
                 alt={product?.description as string}
-                className="w-full h-auto"
               />
-            </Grid>
-            <Grid item xs={4} marginTop={20}>
-              <Typography variant="h3">{product?.name}</Typography>
-              <Typography variant="h5" marginBottom={4}>
-                £{price}
-              </Typography>
-              <Divider />
-              <Typography variant="body1" marginY={4}>
-                {product?.description}
-              </Typography>
-              <button
-                onClick={() => createOrUpdateCart(product?.id as string, 1)}
-                className="btn btn-sm"
-              >
-                Add to cart - £{price}
-              </button>
-            </Grid>
-          </Grid>
-        </Container>
+            </div>
+            <div className="flex-1 min-w-64">
+              <>
+                <h1 className="text-xl">{product?.name}</h1>
+                <p className="text-base">£{price}</p>
+                <hr />
+              </>
+              <div className="mt-4 space-y-4">
+                <p className="text-base">{product?.description}</p>
+                <button
+                  onClick={() => createOrUpdateCart(product?.id as string, 1)}
+                  className="btn btn-primary text-align-right"
+                >
+                  Add to cart - £{price}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </main>
-    </div>
+    </>
   );
 }

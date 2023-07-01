@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./src/**/*.tsx"],
+  content: ["./src/**/*.tsx", "./pages/**/*.tsx"],
   daisyui: {
     styled: true,
     themes: false,
@@ -12,7 +12,7 @@ module.exports = {
     darkTheme: "dark",
     themes: [
       {
-        theme: {
+        myTheme: {
         "primary": "#ED407A",
         "secondary": "#A991F7",
         "accent": "#88DBDD",
