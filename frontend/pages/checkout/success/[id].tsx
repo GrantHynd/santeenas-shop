@@ -1,5 +1,5 @@
-import { Alert, AlertTitle, Container, LinearProgress } from "@mui/material";
 import { dehydrate, QueryClient, useQuery } from "react-query";
+import { LoadingSpinner } from "../../../src/app/components/LoadingSpinner";
 import { getCheckoutSession } from "../../../src/carts/api";
 
 type ServerProps = {
@@ -36,35 +36,29 @@ export default function CheckoutSuccessDetail({
 
   const isErrorOrEmptyResponse = (isFetched && !data) || isError;
 
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
   return (
-    <>
-      {isLoading && <LinearProgress color="secondary" />}
-      <Container>
-        {isErrorOrEmptyResponse && (
-          <div style={{ marginTop: 40 }}>
-            <Alert severity="error">
-              <AlertTitle>Issue with checkout</AlertTitle>
-              <p>
-                Looks like something went wrong, please reach out to us and we
-                can confirm whether your order went through.
-              </p>
-            </Alert>
-          </div>
-        )}
-        {data?.session && (
-          <div style={{ marginTop: 40 }}>
-            <Alert severity="success">
-              <AlertTitle>Order placed</AlertTitle>
-              <p>Thank you for supporting your local girl!</p>
-              <p>
-                We will send your receipt to{" "}
-                <strong>{data.customer.email}</strong>, and get started on your
-                putting your order together.
-              </p>
-            </Alert>
-          </div>
-        )}
-      </Container>
-    </>
+    <div className="container mx-auto px-4 md:px-8">
+      {isErrorOrEmptyResponse && (
+        <div className="p-8 my-8 border-2">
+          <p>
+            Looks like something went wrong, please reach out to us and we can
+            confirm whether your order went through.
+          </p>
+        </div>
+      )}
+      {data?.session && (
+        <div className="p-8 my-8 border-2">
+          <p>Thank you for supporting your local girl!</p>
+          <p>
+            We will send your receipt to <strong>{data.customer.email}</strong>,
+            and get started on your putting your order together.
+          </p>
+        </div>
+      )}
+    </div>
   );
 }
