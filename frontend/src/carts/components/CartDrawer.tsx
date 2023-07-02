@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useMemo } from "react";
 
-import { Divider, SwipeableDrawer } from "@mui/material";
 import CloseIcon from "@mui/icons-material/CloseOutlined";
 import Image from "next/image";
 import { loadStripe } from "@stripe/stripe-js";
@@ -14,6 +13,7 @@ import {
   CartDispatchContext,
 } from "../cartContext";
 import { CartResponse } from "../api";
+import Drawer from "../../app/components/Drawer";
 
 loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string);
 
@@ -66,12 +66,7 @@ export function CartDrawer() {
   );
 
   return (
-    <SwipeableDrawer
-      anchor="right"
-      open={isCartOpen}
-      onOpen={(e) => toggleDrawer(e, true)}
-      onClose={(e) => toggleDrawer(e, false)}
-    >
+    <Drawer isOpen={isCartOpen} onClose={(e) => toggleDrawer(e, false)}>
       <div className="flex flex-wrap p-4 justify-between align-items-center content-center">
         <h3 className="text-xl">Cart</h3>
         <div className="">
@@ -83,8 +78,8 @@ export function CartDrawer() {
           </button>
         </div>
       </div>
-      <Divider />
-      <div style={{ position: "relative", width: 400, height: "100%" }}>
+      <div className="divider" />
+      <div>
         {!cart?.products ? (
           <div
             style={{
@@ -130,7 +125,6 @@ export function CartDrawer() {
                 </React.Fragment>
               );
             })}
-            <div className="divider"></div>
             <div className="mt-4 px-4">
               <div className="">
                 <p className="text-base">
@@ -147,6 +141,6 @@ export function CartDrawer() {
           </div>
         )}
       </div>
-    </SwipeableDrawer>
+    </Drawer>
   );
 }
