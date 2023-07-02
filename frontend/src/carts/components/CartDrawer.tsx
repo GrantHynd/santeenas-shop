@@ -1,12 +1,5 @@
 import React, { useCallback, useContext, useMemo } from "react";
 
-import {
-  Button,
-  Divider,
-  Grid,
-  SwipeableDrawer,
-  Typography,
-} from "@mui/material";
 import CloseIcon from "@mui/icons-material/CloseOutlined";
 import Image from "next/image";
 import { loadStripe } from "@stripe/stripe-js";
@@ -20,6 +13,7 @@ import {
   CartDispatchContext,
 } from "../cartContext";
 import { CartResponse } from "../api";
+import Drawer from "../../app/components/Drawer";
 
 loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string);
 
@@ -72,24 +66,20 @@ export function CartDrawer() {
   );
 
   return (
-    <SwipeableDrawer
-      anchor="right"
-      open={isCartOpen}
-      onOpen={(e) => toggleDrawer(e, true)}
-      onClose={(e) => toggleDrawer(e, false)}
-    >
-      <Grid container sx={{ width: 400 }} gap={1} paddingX={2} paddingY={2}>
-        <Grid item xs={10}>
-          <Typography variant="h5">Cart</Typography>
-        </Grid>
-        <Grid item xs={1} sx={{ textAlign: "center" }}>
-          <Button onClick={(e) => toggleDrawer(e, false)}>
+    <Drawer isOpen={isCartOpen} onClose={(e) => toggleDrawer(e, false)}>
+      <div className="flex flex-wrap p-4 justify-between align-items-center content-center">
+        <h3 className="text-xl">Cart</h3>
+        <div className="">
+          <button
+            onClick={(e) => toggleDrawer(e, false)}
+            className="btn btn-outline btn-square btn-primary"
+          >
             <CloseIcon />
-          </Button>
-        </Grid>
-      </Grid>
-      <Divider />
-      <div style={{ position: "relative", width: 400, height: "100%" }}>
+          </button>
+        </div>
+      </div>
+      <div className="divider" />
+      <div>
         {!cart?.products ? (
           <div
             style={{
@@ -106,57 +96,51 @@ export function CartDrawer() {
             {cart?.products.map((item) => {
               return (
                 <React.Fragment key={item.product.id}>
-                  <Grid container gap={1} marginX={2} marginY={2}>
-                    <Grid item>
+                  <div className="flex space-x-4 p-4">
+                    <div>
                       <Image
                         src={item.product.imageUrl}
                         width={150}
                         height={200}
                         alt={item.product.description}
                       />
-                    </Grid>
-                    <Grid item>
-                      <Typography variant="subtitle1">
-                        {item.product.name}
-                      </Typography>
-                      <Typography variant="body2">
+                    </div>
+                    <div>
+                      <h4 className="text-lg">{item.product.name}</h4>
+                      <p className="text-base">
                         £{convertToDisplayPrice(item.product.price)}
-                      </Typography>
-                      <Typography variant="body2">
-                        Quantity: {item.quantity}
-                      </Typography>
-                      <Typography
+                      </p>
+                      <p className="text-base">Quantity: {item.quantity}</p>
+                      <button
+                        className="btn btn-link min-h-0 pl-0"
                         onClick={() =>
                           removeCartItem({ productId: item.product.id })
                         }
-                        variant="body2"
-                        sx={{ color: "primary.main", cursor: "pointer" }}
                       >
                         Remove item
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                  <Divider />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="divider"></div>
                 </React.Fragment>
               );
             })}
-            <Divider />
-            <Grid container sx={{ width: 400 }} paddingX={2} paddingY={2}>
-              <Grid item xs={12}>
-                <Typography variant="body2" marginBottom={2}>
+            <div className="mt-4 px-4">
+              <div className="">
+                <p className="text-base">
                   Shipping and taxes calculated at checkout
-                </Typography>
+                </p>
                 <form onSubmit={(e) => onCheckout(e)}>
-                  <Button type="submit" variant="contained" fullWidth>
+                  <button type="submit" className="btn btn-primary btn-block">
                     Checkout - £
                     {convertToDisplayPrice(totalCartPrice as number)}
-                  </Button>
+                  </button>
                 </form>
-              </Grid>
-            </Grid>
+              </div>
+            </div>
           </div>
         )}
       </div>
-    </SwipeableDrawer>
+    </Drawer>
   );
 }

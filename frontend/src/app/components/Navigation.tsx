@@ -19,15 +19,13 @@ export default function Navigation() {
 
   return (
     <div className="flex flex-row-reverse pt-4 bg-primary">
-      <div className="flex mx-4">
+      <div className="flex mx-4 mb-2">
         <button
-          className="flex text-white hover:text-primary-700 gap-2 p-2 cursor-pointer"
+          className="btn btn-ghost gap-2 text-white"
           onClick={() => cartDispatch?.({ type: CartActionType.OPEN })}
         >
           <BasketIcon width={24} height={24} />
-          <span className="text-white">
-            {totalCartItems === 0 ? "" : totalCartItems}
-          </span>
+          {totalCartItems === 0 ? "" : totalCartItems}
         </button>
       </div>
     </div>

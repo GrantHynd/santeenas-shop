@@ -2,14 +2,6 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Grid,
-  Typography,
-} from "@mui/material";
 import { dehydrate, QueryClient, useQuery } from "react-query";
 
 import { useUpdateCart } from "../src/carts/hooks/useUpdateCart";
@@ -32,62 +24,49 @@ export default function Products() {
   const { data: products } = useQuery("products", getProducts);
 
   return (
-    <div className="container">
+    <>
       <Head>
         <title>Products | Styles by Santeena</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Grid
-          item
-          container
-          gap={4}
-          paddingX={8}
-          marginY={4}
-          direction="row"
-          justifyContent=""
-        >
-          {products?.map((product) => {
-            return (
-              <Card key={product.id} sx={{ width: 320 }}>
-                <Link href={`/products/${product.id}`}>
-                  <Image
-                    sizes="100vw"
-                    width="320"
-                    height="400"
-                    src={product.imageUrl}
-                    alt={product.description}
-                    className="w-full h-auto"
-                  />
-                </Link>
-                <CardContent>
+        <div className="container max-w-screen-xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 my-12">
+            {products?.map((product) => {
+              return (
+                <div key={product.id} className="card bg-base-100 shadow-xl">
                   <Link href={`/products/${product.id}`}>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {product.name}
-                    </Typography>
+                    <Image
+                      sizes="100vw"
+                      width="320"
+                      height="400"
+                      src={product.imageUrl}
+                      alt={product.description}
+                      className="w-full h-auto"
+                    />
                   </Link>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    height={25}
-                  >
-                    {product.description}
-                  </Typography>
-                </CardContent>
-                <CardActions style={{ justifyContent: "end" }}>
-                  <Button
-                    onClick={() => createOrUpdateCart(product?.id as string, 1)}
-                    size="small"
-                    variant="text"
-                  >
-                    Add to cart - £{convertToDisplayPrice(product.price)}
-                  </Button>
-                </CardActions>
-              </Card>
-            );
-          })}
-        </Grid>
+                  <div className="card-body">
+                    <Link href={`/products/${product.id}`}>
+                      <h4 className="card-title">{product.name}</h4>
+                    </Link>
+                    <p>{product.description}</p>
+                    <div className="card-actions justify-end">
+                      <button
+                        onClick={() =>
+                          createOrUpdateCart(product?.id as string, 1)
+                        }
+                        className="btn"
+                      >
+                        Add to cart - £{convertToDisplayPrice(product.price)}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </main>
-    </div>
+    </>
   );
 }

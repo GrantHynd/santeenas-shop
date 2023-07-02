@@ -4,8 +4,6 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-import { ThemeProvider } from "@mui/material";
-import { createTheme } from "@mui/material/styles";
 import Cookies from "js-cookie";
 import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 
@@ -20,17 +18,6 @@ import {
   initCart,
 } from "../src/carts/cartContext";
 import { CartDrawer } from "../src/carts/components/CartDrawer";
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#ed4079",
-    },
-    secondary: {
-      main: "#ba68c8",
-    },
-  },
-});
 
 // This default export is required in a new `pages/_app.js` file.
 export default function MyApp({
@@ -64,18 +51,16 @@ export default function MyApp({
   }, [cartIdCookie]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <QueryClientProvider client={queryClient}>
-        <Hydrate state={pageProps.dehydratedState}>
-          <CartDispatchContext.Provider value={cartDispatch}>
-            <CartContext.Provider value={cartState}>
-              <CartDrawer />
-              <Header />
-              <Component {...pageProps} />
-            </CartContext.Provider>
-          </CartDispatchContext.Provider>
-        </Hydrate>
-      </QueryClientProvider>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <Hydrate state={pageProps.dehydratedState}>
+        <CartDispatchContext.Provider value={cartDispatch}>
+          <CartContext.Provider value={cartState}>
+            <CartDrawer />
+            <Header />
+            <Component {...pageProps} />
+          </CartContext.Provider>
+        </CartDispatchContext.Provider>
+      </Hydrate>
+    </QueryClientProvider>
   );
 }
